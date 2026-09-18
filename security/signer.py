@@ -44,21 +44,24 @@ class LabKeyManager:
         public_path: Path,
     ) -> None:
         """Saves private and public keys to PEM format."""
-        private_path.parent.mkdir(parents=True, exist_ok=True)
-        public_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            private_path.parent.mkdir(parents=True, exist_ok=True)
+            public_path.parent.mkdir(parents=True, exist_ok=True)
 
-        priv_bytes = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
-        )
-        pub_bytes = private_key.public_key().public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        )
+            priv_bytes = private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+            pub_bytes = private_key.public_key().public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            )
 
-        private_path.write_bytes(priv_bytes)
-        public_path.write_bytes(pub_bytes)
+            private_path.write_bytes(priv_bytes)
+            public_path.write_bytes(pub_bytes)
+        except (OSError, PermissionError):
+            pass
 
     @staticmethod
     def load_private_key(path: Path) -> ed25519.Ed25519PrivateKey:

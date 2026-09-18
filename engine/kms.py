@@ -111,8 +111,17 @@ class KeyManagementService:
     """Multi-tenant Enterprise Key Management Service and Trust Registry."""
 
     def __init__(self, kms_dir: Optional[Path] = None):
-        self.kms_dir = kms_dir or DEFAULT_KMS_DIR
-        self.kms_dir.mkdir(parents=True, exist_ok=True)
+        target_dir = kms_dir or DEFAULT_KMS_DIR
+        try:
+            target_dir.mkdir(parents=True, exist_ok=True)
+            self.kms_dir = target_dir
+        except (OSError, PermissionError):
+            tmp_kms = Path("/tmp/genesign_keys")
+            try:
+                tmp_kms.mkdir(parents=True, exist_ok=True)
+                self.kms_dir = tmp_kms
+            except (OSError, PermissionError):
+                self.kms_dir = target_dir
         self.providers: Dict[str, SynthesisProvider] = {}
         self.crl: List[Dict[str, Any]] = []  # Key Revocation List
         self._init_default_providers()
@@ -140,7 +149,7 @@ class KeyManagementService:
             else:
                 priv = ed25519.Ed25519PrivateKey.generate()
                 pub = priv.public_key()
-                # Persist
+                # Persist if filesystem is writable
                 priv_bytes = priv.private_bytes(
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PrivateFormat.PKCS8,
@@ -150,8 +159,11 @@ class KeyManagementService:
                     encoding=serialization.Encoding.PEM,
                     format=serialization.PublicFormat.SubjectPublicKeyInfo,
                 )
-                priv_file.write_bytes(priv_bytes)
-                pub_file.write_bytes(pub_bytes)
+                try:
+                    priv_file.write_bytes(priv_bytes)
+                    pub_file.write_bytes(pub_bytes)
+                except (OSError, PermissionError):
+                    pass
 
             pkey = ProviderKey(version="v1", public_key=pub, private_key=priv)
             provider.add_key(pkey, set_active=True)
@@ -183,8 +195,11 @@ class KeyManagementService:
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
-        priv_file.write_bytes(priv_bytes)
-        pub_file.write_bytes(pub_bytes)
+        try:
+            priv_file.write_bytes(priv_bytes)
+            pub_file.write_bytes(pub_bytes)
+        except (OSError, PermissionError):
+            pass
 
         pkey = ProviderKey(version="v1", public_key=pub, private_key=priv)
         provider.add_key(pkey, set_active=True)
@@ -204,15 +219,18 @@ class KeyManagementService:
 
         priv_file = self.kms_dir / f"{pid.lower()}_{next_ver}_private.pem"
         pub_file = self.kms_dir / f"{pid.lower()}_{next_ver}_public.pem"
-        priv_file.write_bytes(priv.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption(),
-        ))
-        pub_file.write_bytes(pub.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        ))
+        try:
+            priv_file.write_bytes(priv.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption(),
+            ))
+            pub_file.write_bytes(pub.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            ))
+        except (OSError, PermissionError):
+            pass
 
         new_pkey = ProviderKey(version=next_ver, public_key=pub, private_key=priv)
         provider.add_key(new_pkey, set_active=True)

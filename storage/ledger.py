@@ -18,15 +18,48 @@ class AuditLedger:
     """Enterprise SQLite ledger for biosecurity and watermarking compliance."""
 
     def __init__(self, db_path: Optional[Path] = None):
-        self.db_path = db_path or DEFAULT_DB_PATH
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self._init_db()
+        target_path = db_path or DEFAULT_DB_PATH
+        self._mem_conn: Optional[sqlite3.Connection] = None
+        self.db_path = target_path
+
+        # Attempt to create directory and initialize DB at target_path
+        # If in read-only serverless environment (e.g. Vercel / AWS Lambda), fallback to /tmp, then :memory:
+        candidates = [
+            target_path,
+            Path("/tmp/genesign_storage/ledger.db"),
+            Path(":memory:"),
+        ]
+
+        initialized = False
+        for p in candidates:
+            try:
+                self.db_path = p
+                if str(p) != ":memory:":
+                    p.parent.mkdir(parents=True, exist_ok=True)
+                self._init_db()
+                initialized = True
+                break
+            except (OSError, PermissionError, sqlite3.OperationalError):
+                continue
+
+        if not initialized:
+            self.db_path = Path(":memory:")
+            self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
+        if str(self.db_path) == ":memory:":
+            if self._mem_conn is None:
+                self._mem_conn = sqlite3.connect(":memory:", check_same_thread=False)
+                self._mem_conn.row_factory = sqlite3.Row
+            return self._mem_conn
+
         conn = sqlite3.connect(str(self.db_path), timeout=10.0)
         conn.row_factory = sqlite3.Row
-        # Enable WAL mode for high concurrency
-        conn.execute("PRAGMA journal_mode=WAL;")
+        # Enable WAL mode for high concurrency if supported
+        try:
+            conn.execute("PRAGMA journal_mode=WAL;")
+        except sqlite3.OperationalError:
+            pass
         return conn
 
     def _init_db(self) -> None:

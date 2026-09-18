@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "web/app.py",
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": [
+          "web/templates/**",
+          "web/static/**",
+          "samples/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "web/app.py"
+    }
+  ]
+}

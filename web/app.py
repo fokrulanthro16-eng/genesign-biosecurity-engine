@@ -6,6 +6,7 @@ multi-tenant KMS trust registry, and asynchronous batch FASTA/FASTQ ingestion.
 """
 
 import os
+import sys
 import time
 import json
 import uuid
@@ -13,6 +14,12 @@ import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional, Any
+
+# Ensure project root is in sys.path for serverless runtimes (e.g. Vercel, AWS Lambda)
+BASE_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = BASE_DIR.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks, UploadFile, File, Form, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, Response
@@ -77,12 +84,24 @@ firewall = BiosecurityFirewall()
 # Ensure demo server key exists for backward compatibility
 SERVER_KEY_PRIV = KEYS_DIR / "server_private.pem"
 SERVER_KEY_PUB = KEYS_DIR / "server_public.pem"
-if not SERVER_KEY_PRIV.exists():
-    priv, pub = LabKeyManager.generate_keypair()
-    LabKeyManager.save_keys(priv, SERVER_KEY_PRIV, SERVER_KEY_PUB)
 
-server_priv = LabKeyManager.load_private_key(SERVER_KEY_PRIV)
-server_pub = LabKeyManager.load_public_key(SERVER_KEY_PUB)
+if SERVER_KEY_PRIV.exists() and SERVER_KEY_PUB.exists():
+    try:
+        server_priv = LabKeyManager.load_private_key(SERVER_KEY_PRIV)
+        server_pub = LabKeyManager.load_public_key(SERVER_KEY_PUB)
+    except Exception:
+        server_priv, server_pub = LabKeyManager.generate_keypair()
+else:
+    server_priv, server_pub = LabKeyManager.generate_keypair()
+    try:
+        LabKeyManager.save_keys(server_priv, SERVER_KEY_PRIV, SERVER_KEY_PUB)
+    except (OSError, PermissionError):
+        tmp_keys = Path("/tmp/genesign_keys")
+        try:
+            tmp_keys.mkdir(parents=True, exist_ok=True)
+            LabKeyManager.save_keys(server_priv, tmp_keys / "server_private.pem", tmp_keys / "server_public.pem")
+        except (OSError, PermissionError):
+            pass
 firewall.register_lab_public_key("TWS", server_pub)
 firewall.register_lab_public_key("TWIST", server_pub)
 firewall.register_lab_public_key("ID", server_pub)
@@ -1523,6 +1542,10 @@ async def api_get_compliance_certificate_pdf(
             "X-Compliance-Framework": "US-HHS-2026; ISO-TC-276",
         },
     )
+
+
+# Expose ASGI application instance cleanly for Vercel serverless execution
+handler = app
 
 
 
