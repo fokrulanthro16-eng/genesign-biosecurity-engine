@@ -24,3 +24,8 @@ dependencies = [
 
 [project.scripts]
 genesign = "cli:cli"
+
+[tool.setuptools]
+packages = ["engine", "scanner", "security", "storage", "web"]
+py-modules = ["cli"]
+
