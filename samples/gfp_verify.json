@@ -1,0 +1,14 @@
+{
+  "file": "samples/gfp_signed.fasta",
+  "sequence_hash": "be347391077205811fd197267cc35f84ae08fdd55615bea2ac8386a4f6a3fe0b",
+  "sequence_length": 717,
+  "watermark_extracted": true,
+  "tamper_detected": false,
+  "payload": {
+    "lab_id": "TWS",
+    "order_id": "901",
+    "key_fp": "cb",
+    "mode": "Standard-96bit"
+  },
+  "error": null
+}

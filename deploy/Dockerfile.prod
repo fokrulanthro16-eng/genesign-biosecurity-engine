@@ -1,0 +1,84 @@
+# ===========================================================================
+# GeneSign Enterprise Production Dockerfile (Hardened Multi-Stage Build)
+# ===========================================================================
+
+# Stage 1: Build Dependencies
+FROM python:3.11-slim-bookworm AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libffi-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY pyproject.toml .
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir \
+        fastapi>=0.115.0 \
+        uvicorn[standard]>=0.30.0 \
+        cryptography>=43.0.0 \
+        pydantic>=2.8.0 \
+        jinja2>=3.1.0 \
+        click>=8.1.0 \
+        pytest>=8.0.0 \
+        reportlab>=4.2.0 \
+        pyjwt>=2.9.0
+
+
+# Stage 2: Hardened Runtime
+FROM python:3.11-slim-bookworm AS runtime
+
+LABEL maintainer="GeneSign Biosecurity Engineering <ops@genesign.bio>"
+LABEL org.opencontainers.image.title="GeneSign Core Engine"
+LABEL org.opencontainers.image.description="Enterprise Biosecurity Operating System & Synthetic DNA Watermarking Firewall"
+LABEL org.opencontainers.image.version="3.0.0-COMMERCIAL"
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    LEDGER_PATH="/app/storage/ledger.db" \
+    KMS_ROOT="/app/keys" \
+    PORT=8095
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create unprivileged system user
+RUN groupadd -g 10001 genesign && \
+    useradd -u 10001 -g genesign -s /bin/bash -m genesign
+
+WORKDIR /app
+
+# Copy isolated virtualenv from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Create persistent storage directories
+RUN mkdir -p /app/storage /app/keys /app/samples && \
+    chown -R genesign:genesign /app
+
+# Copy application source code
+COPY --chown=genesign:genesign engine/ /app/engine/
+COPY --chown=genesign:genesign scanner/ /app/scanner/
+COPY --chown=genesign:genesign security/ /app/security/
+COPY --chown=genesign:genesign storage/ /app/storage/
+COPY --chown=genesign:genesign web/ /app/web/
+COPY --chown=genesign:genesign samples/ /app/samples/
+COPY --chown=genesign:genesign cli.py /app/cli.py
+COPY --chown=genesign:genesign pyproject.toml /app/pyproject.toml
+
+USER genesign
+
+EXPOSE 8095
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8095/healthz || exit 1
+
+ENTRYPOINT ["python", "-m", "uvicorn", "web.app:app"]
+CMD ["--host", "0.0.0.0", "--port", "8095", "--workers", "4", "--access-log"]

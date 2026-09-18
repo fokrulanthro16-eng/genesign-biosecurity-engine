@@ -1,0 +1,33 @@
+services:
+  genesign:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genesign-core-v2
+    restart: unless-stopped
+    ports:
+      - "8095:8095"
+    env_file:
+      - .env.production
+    environment:
+      - PORT=8095
+      - HOST=0.0.0.0
+      - KMS_ROOT=/app/keys
+      - LEDGER_PATH=/app/storage/ledger.db
+      - MAX_BATCH_RECORDS=500
+      - WORKER_CONCURRENCY=4
+    volumes:
+      - ./storage:/app/storage
+      - ./keys:/app/keys
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8095/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - biosecurity-net
+
+networks:
+  biosecurity-net:
+    driver: bridge

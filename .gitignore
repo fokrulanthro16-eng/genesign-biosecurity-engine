@@ -1,0 +1,98 @@
+# ==============================================================================
+# GeneSign Biosecurity Core - Enterprise Git Ignore Specification
+# ==============================================================================
+
+# Environment & Secrets (NEVER COMMIT SENSITIVE SECRETS)
+.env
+.env.*
+!.env.example
+*.env
+*.env.local
+
+# Python Bytecode & Runtime Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Coverage Artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+htmlcov/
+
+# Local Databases, SQLite WAL Files & Storage
+storage/*.db
+storage/*.db-wal
+storage/*.db-shm
+storage/*.sqlite
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+
+# Cryptographic Keys & Local Private Certificates
+keys/*.pem
+keys/test_scratch/
+*.key
+*.pem
+*.pfx
+*.p12
+
+# Logs & Process PID Files
+*.log
+logs/
+*.pid
+*.seed
+
+# IDE & Editor Configurations
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini

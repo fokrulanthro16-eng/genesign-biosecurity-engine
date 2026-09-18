@@ -1,0 +1,70 @@
+version: '3.8'
+
+# ===========================================================================
+# GeneSign Enterprise Production Docker Compose Orchestration
+# ===========================================================================
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.prod
+    container_name: genesign-core-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PORT=8095
+      - LEDGER_PATH=/app/storage/ledger.db
+      - KMS_ROOT=/app/keys
+    volumes:
+      - genesign-storage:/app/storage
+      - genesign-keys:/app/keys
+    expose:
+      - "8095"
+    networks:
+      - genesign-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8095/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '4.00'
+          memory: 4096M
+        reservations:
+          cpus: '1.00'
+          memory: 512M
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: genesign-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - genesign-ssl:/etc/nginx/ssl:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - genesign-net
+
+volumes:
+  genesign-storage:
+    name: genesign-enterprise-storage
+  genesign-keys:
+    name: genesign-enterprise-keys
+  genesign-ssl:
+    name: genesign-ssl-certs
+
+networks:
+  genesign-net:
+    name: genesign-production-network
+    driver: bridge

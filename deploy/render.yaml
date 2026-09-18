@@ -1,0 +1,43 @@
+# ===========================================================================
+# GeneSign Render.com Infrastructure-as-Code (IaC) Blueprint
+# ===========================================================================
+
+services:
+  - type: web
+    name: genesign-biosecurity-engine
+    runtime: docker
+    dockerfilePath: ./deploy/Dockerfile.prod
+    dockerContext: .
+    plan: standard
+    region: oregon
+    healthCheckPath: /healthz
+    autoDeploy: true
+
+    disk:
+      name: genesign-ledger-disk
+      mountPath: /var/data
+      sizeGB: 50
+
+    envVars:
+      - key: PORT
+        value: 8095
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: LEDGER_PATH
+        value: /var/data/ledger.db
+      - key: KMS_ROOT
+        value: /var/data/keys
+      - key: GENESIGN_JWT_SECRET
+        generateValue: true
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: ED25519_ROOT_SEED
+        generateValue: true
+      - key: MAX_BATCH_RECORDS
+        value: 1000
+      - key: WORKER_CONCURRENCY
+        value: 8

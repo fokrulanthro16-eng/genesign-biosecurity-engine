@@ -1,0 +1,20 @@
+{
+  "token_header": {
+    "algorithm": "Ed25519",
+    "digest": "SHA-256",
+    "format": "GeneSign-Provenance-v1"
+  },
+  "claims": {
+    "token_id": "GS-PROOF-8F576F3FFBBC",
+    "lab_id": "TWS",
+    "order_id": "901",
+    "sequence_hash": "be347391077205811fd197267cc35f84ae08fdd55615bea2ac8386a4f6a3fe0b",
+    "key_fingerprint": "cb92eb980a1bb758",
+    "sequence_length_nt": 717,
+    "timestamp": "2026-09-18T05:28:02.171150+00:00",
+    "compliance_standard": "ISO/TC-276-BIOSECURITY-V2",
+    "regulatory_status": "CERTIFIED_COMMERCIAL_SYNTHESIS",
+    "custom_metadata": {}
+  },
+  "signature": "pJMxFMgPXljyAnuqPD7k0J2rVDnXGeQHvW0s1Xzti50XWWtk/Gok2zuK8ZcdnOcdpfgKRFJzuNele1pGXM+ABw=="
+}

@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeneSign | Cinematic 3D Synthetic DNA Provenance & Biosecurity Engine</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Ambient Glow Bloom -->
+  <div class="bloom-overlay"></div>
+
+  <!-- Three.js Photorealistic 3D Double-Helix Canvas (Hero Layer) -->
+  <canvas id="dna-canvas"></canvas>
+
+  <!-- Foreground Application Viewport -->
+  <div class="app-viewport">
+
+    <!-- 1. Top Enterprise Header Bar -->
+    <header class="top-nav">
+      <div class="brand-wrapper">
+        <div class="brand-logo-pill">
+          <span class="brand-dot"></span>
+          <span>GeneSign Provenance OS // v2.0-PROD</span>
+        </div>
+      </div>
+
+      <div class="stats-hud-strip">
+        <div class="stat-metric">
+          <span class="stat-metric-tag">Audit Ledger</span>
+          <span class="stat-metric-num" id="ticker-total">{{ stats.total_events }}</span>
+        </div>
+        <div class="stat-metric">
+          <span class="stat-metric-tag">Signed CDS</span>
+          <span class="stat-metric-num" id="ticker-wm" style="color: #34d399;">{{ stats.watermarks_created }}</span>
+        </div>
+        <div class="stat-metric">
+          <span class="stat-metric-tag">Select Threats</span>
+          <span class="stat-metric-num" id="ticker-threats" style="color: #f87171;">{{ stats.threats_intercepted }}</span>
+        </div>
+        <div class="stat-metric">
+          <span class="stat-metric-tag">Tamper Interlocks</span>
+          <span class="stat-metric-num" id="ticker-tamper" style="color: #fbbf24;">{{ stats.tamper_interlocks }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Top-Level Product Mode Switcher -->
+    <div class="mode-switcher-bar">
+      <button id="mode-btn-console" class="mode-switch-btn active" onclick="switchProductMode('console')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6M12 19h8"></path></svg>
+        Commercial Operations Console
+        <span class="pill-badge">TACTICAL HUD</span>
+      </button>
+      <button id="mode-btn-saas" class="mode-switch-btn" onclick="switchProductMode('saas')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Public Enterprise SaaS Portal
+        <span class="pill-badge" style="color: #34d399; background: rgba(16, 185, 129, 0.15);">COMMERCIAL SUITE</span>
+      </button>
+    </div>
+
+    <!-- Mode A: Commercial Operations Console Container -->
+    <div id="console-view-container">
+      <!-- 2. Minimalist Typographic Hero Header -->
+      <section class="hero-header">
+        <div>
+          <h1 class="hero-dna-title">DNA<span>.GENESIGN</span></h1>
+        <p style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.4rem;">
+          Commercial Synthetic DNA Steganography & Biosecurity Firewall
+        </p>
+      </div>
+
+      <div class="architectural-card">
+        <div class="arch-header">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>ISO/TC-276 Verified Core Specification</span>
+        </div>
+        <div class="arch-body">
+          Zero-drift wobble degenerate codon steganography guaranteeing 100% amino acid translation preservation, &Delta;GC = 0.000%, and Ed25519 dual-layer origin provenance.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Navigation Controls Bar -->
+    <nav class="nav-pills-bar">
+      <button class="nav-pill-btn active" data-tab="tab-encoder">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        Watermark Injection Studio
+      </button>
+      <button class="nav-pill-btn" data-tab="tab-firewall">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Biosecurity Scanner Radar
+      </button>
+      <button class="nav-pill-btn" data-tab="tab-tamper">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+        1-Base Tamper Simulator
+      </button>
+      <button class="nav-pill-btn" data-tab="tab-ledger">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path><path d="M6 6h10M6 10h10"></path></svg>
+        Audit Ledger Stream
+      </button>
+      <button class="nav-pill-btn" data-tab="tab-enterprise">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        Enterprise Batch & KMS
+      </button>
+      <button class="nav-pill-btn" data-tab="tab-hardware">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+        Hardware Interlock & TOC
+      </button>
+    </nav>
+
+    <!-- 4. Functional Glassmorphic Control HUD Panels -->
+    <main class="main-content">
+
+      <!-- Panel 1: Watermark Injection Studio -->
+      <section id="tab-encoder" class="panel-section active">
+        <div class="glass-grid">
+          <!-- Input Card -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Target Coding Sequence (CDS)</span>
+              <span style="font-size: 0.72rem; color: var(--cyan-glow); font-family: var(--font-mono);">FASTA / Nucleotides</span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Reference Protein Preset</label>
+              <div class="preset-selector-row">
+                <button class="preset-chip wm-preset-btn" data-sample="gfp">GFP (239 aa)</button>
+                <button class="preset-chip wm-preset-btn" data-sample="insulin">Human Insulin (111 aa)</button>
+                <button class="preset-chip wm-preset-btn" data-sample="spike">Spike Protein RBD (977 aa)</button>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Target Coding DNA String</label>
+              <textarea id="wm-input-seq" class="code-textarea" placeholder=">SEQ_ID Description&#10;ATGGCCCTGTGG..."></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+              <div>
+                <label class="field-label">Licensed Lab Identifier</label>
+                <input type="text" id="wm-lab-id" class="glass-input" value="TWS" maxlength="4">
+              </div>
+              <div>
+                <label class="field-label">Commercial Order ID</label>
+                <input type="text" id="wm-order-id" class="glass-input" value="901" maxlength="4">
+              </div>
+            </div>
+
+            <button id="wm-encode-btn" class="btn-cinema">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              <span>Inject Synthetic Watermark</span>
+            </button>
+          </div>
+
+          <!-- Analytics & Codon Delta Heatmap Card -->
+          <div class="glass-card" id="wm-results-panel" style="display: none;">
+            <div class="glass-card-title">
+              <span>Biological Invariant Verification</span>
+              <span id="wm-cert-id-badge" style="font-size: 0.72rem; color: #34d399; font-family: var(--font-mono); background: rgba(16, 185, 129, 0.15); padding: 0.25rem 0.6rem; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);"></span>
+            </div>
+
+            <!-- Invariant Metrics Quad -->
+            <div class="metrics-quad">
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Length</div>
+                <div class="metric-quad-val" id="wm-stat-len">-</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Shifted Codons</div>
+                <div class="metric-quad-val" id="wm-stat-codons" style="color: var(--coral-accent);">-</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">GC Content Drift</div>
+                <div class="metric-quad-val" id="wm-stat-gcdrift" style="color: #34d399;">0.0%</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Shannon Entropy</div>
+                <div class="metric-quad-val" id="wm-stat-entropy">-</div>
+              </div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.8rem; color: #34d399; font-family: var(--font-mono); margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>✓ Translation Invariant: 100% PRESERVED (0 Missense, 0 Nonsense)</div>
+              <div>Post-GC: <span id="wm-stat-gcpost"></span></div>
+            </div>
+
+            <!-- Codon Shift Delta Heatmap -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="field-label" style="margin-bottom: 0;">Codon Shift Delta Heatmap (Synonymous Wobble Modulation)</span>
+              <span style="font-size: 0.68rem; color: var(--text-muted); font-family: var(--font-mono);">Hover for mutation details</span>
+            </div>
+            <div class="heatmap-scroll-area">
+              <div id="codon-heatmap-grid" class="heatmap-grid-layout"></div>
+            </div>
+
+            <!-- Action Bar -->
+            <div style="display: flex; gap: 1rem; margin-top: 1.25rem;">
+              <button id="wm-dl-fasta" class="btn-glass-subtle" style="flex: 1;">
+                ⬇ Download Signed FASTA
+              </button>
+              <button id="wm-dl-cert" class="btn-glass-subtle" style="flex: 1; border-color: rgba(56, 189, 248, 0.4); color: var(--cyan-glow);">
+                📜 Export Provenance Cert (.json)
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 2: Biosecurity Scanner Radar -->
+      <section id="tab-firewall" class="panel-section">
+        <div class="glass-grid">
+          <!-- Input Card -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Biosecurity Inspection Stream</span>
+              <span style="font-size: 0.72rem; color: var(--crimson-accent); font-family: var(--font-mono);">Real-Time Select Agent Screen</span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Load Threat Profile Preset</label>
+              <div class="preset-selector-row">
+                <button class="preset-chip fw-preset-btn" data-sample="signed_gfp" style="border-color: rgba(16, 185, 129, 0.4); color: #34d399;">Signed Watermarked GFP</button>
+                <button class="preset-chip fw-preset-btn" data-sample="insulin">Unsigned Benign Insulin</button>
+                <button class="preset-chip fw-preset-btn" data-sample="ebola" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">Ebola VP35 (Select Agent)</button>
+                <button class="preset-chip fw-preset-btn" data-sample="smallpox" style="border-color: rgba(239, 68, 68, 0.4); color: #f87171;">Smallpox HA (Restricted)</button>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Sequence Stream to Inspect (FASTA / FastQ / Raw Nucleotides)</label>
+              <textarea id="fw-input-seq" class="code-textarea" placeholder="Paste unverified DNA sequence or FASTA text..."></textarea>
+            </div>
+
+            <button id="fw-scan-btn" class="btn-cinema">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Run Biosecurity Firewall Screen</span>
+            </button>
+          </div>
+
+          <!-- Verdict Card -->
+          <div class="glass-card" id="fw-results-panel" style="display: none;">
+            <div class="glass-card-title">
+              <span>Origin Verification & Threat Radar</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">Multi-State Decision Matrix</span>
+            </div>
+
+            <div id="fw-status-banner" class="verdict-banner">
+              <div id="fw-status-icon" class="verdict-glyph">🛡️</div>
+              <div>
+                <div id="fw-status-title" class="verdict-title">-</div>
+                <div id="fw-status-desc" class="verdict-summary">-</div>
+              </div>
+            </div>
+
+            <div class="metrics-quad" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.25rem;">
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Length</div>
+                <div class="metric-quad-val" id="fw-len">-</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">GC Content</div>
+                <div class="metric-quad-val" id="fw-gc">-</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Entropy</div>
+                <div class="metric-quad-val" id="fw-entropy">-</div>
+              </div>
+            </div>
+
+            <div style="background: rgba(6, 10, 20, 0.85); border: 1px solid var(--border-glass); padding: 0.85rem; border-radius: 10px; font-family: var(--font-mono); font-size: 0.75rem; margin-bottom: 1.25rem;">
+              <div style="color: var(--text-muted); margin-bottom: 0.3rem;">Sequence SHA-256: <span id="fw-hash" style="color: var(--cyan-glow);">-</span></div>
+              <div style="color: var(--text-muted);">Provenance Origin: <span id="fw-lab" style="color: #34d399;">-</span></div>
+            </div>
+
+            <!-- Threat Matches -->
+            <div id="fw-threats-block" style="display: none; margin-bottom: 1.25rem;">
+              <span class="field-label" style="color: var(--crimson-accent);">🚨 Select Agent Threat Matches</span>
+              <div id="fw-threats-list"></div>
+            </div>
+
+            <!-- Translation Confirmation -->
+            <div>
+              <span class="field-label">Translated Amino Acid Sequence</span>
+              <div id="fw-protein" style="max-height: 90px; overflow-y: auto; background: rgba(6, 10, 20, 0.85); border: 1px solid var(--border-glass); padding: 0.75rem; border-radius: 10px; font-family: var(--font-mono); font-size: 0.75rem; color: #cbd5e1; word-break: break-all;">-</div>
+            </div>
+
+            <!-- Manual AI Trigger Button -->
+            <button id="nemotron-manual-trigger-btn" class="btn-glass-subtle" style="margin-top: 1rem; width: 100%; justify-content: center; display: flex; align-items: center; gap: 0.5rem; border-color: rgba(16, 185, 129, 0.4); color: #34d399;" onclick="triggerNemotronAnalysis(true)">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M12 6v6l4 2"></path></svg>
+              <span>Consult NVIDIA Nemotron Threat Rationale</span>
+            </button>
+
+            <!-- NVIDIA Nemotron Threat Rationale & Regulatory Intelligence Card -->
+            <div id="nemotron-rationale-card" style="display: none; margin-top: 1.25rem; background: rgba(13, 19, 34, 0.95); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 1.25rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.15);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                  <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981;"></div>
+                  <span style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.05em;">
+                    NVIDIA NEMOTRON // EXECUTIVE BIOSECURITY RATIONALE
+                  </span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <span id="nemotron-model-badge" style="font-family: var(--font-mono); font-size: 0.7rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.2rem 0.6rem; border-radius: 4px;">
+                    nvidia/nemotron-3-ultra
+                  </span>
+                  <span id="nemotron-risk-badge" style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
+                    RISK: EVALUATING
+                  </span>
+                </div>
+              </div>
+
+              <!-- Shimmer Loading Indicator -->
+              <div id="nemotron-loading" style="display: none; padding: 1.5rem 1rem; text-align: center;">
+                <div style="display: inline-block; width: 22px; height: 22px; border: 2px solid rgba(16, 185, 129, 0.2); border-top-color: #10b981; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 0.6rem;"></div>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; color: #38bdf8;">Consulting NVIDIA Nemotron Intelligence & Regulatory Frameworks...</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Synthesizing US HHS 2026 Guidance & ISO/TC 276 Risk Assessment</div>
+              </div>
+
+              <!-- Content Body -->
+              <div id="nemotron-content-body">
+                <!-- Executive Risk Assessment -->
+                <div style="margin-bottom: 0.9rem;">
+                  <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.3rem; font-family: var(--font-mono);">
+                    ⚡ Executive Risk Assessment
+                  </div>
+                  <div id="nemotron-summary-text" style="font-size: 0.82rem; line-height: 1.6; color: #f1f5f9; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 8px;">
+                    -
+                  </div>
+                </div>
+
+                <!-- Regulatory Implications -->
+                <div style="margin-bottom: 0.9rem;">
+                  <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.3rem; font-family: var(--font-mono);">
+                    📜 Statutory & Regulatory Implications
+                  </div>
+                  <div id="nemotron-regulatory-text" style="font-size: 0.8rem; line-height: 1.55; color: #cbd5e1; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); padding: 0.8rem; border-radius: 8px;">
+                    -
+                  </div>
+                </div>
+
+                <!-- Recommended Actions Checklist -->
+                <div>
+                  <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 0.35rem; font-family: var(--font-mono);">
+                    🛡️ Foundry Operational Action Directives
+                  </div>
+                  <div id="nemotron-actions-list" style="display: flex; flex-direction: column; gap: 0.35rem;">
+                    <!-- Action items populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- Footer Meta -->
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.9rem; padding-top: 0.65rem; border-top: 1px solid rgba(255, 255, 255, 0.05); font-family: var(--font-mono); font-size: 0.72rem; color: #64748b; flex-wrap: wrap; gap: 0.5rem;">
+                  <span id="nemotron-latency-meta">Latency: 0.00s | Verified Inference</span>
+                  <button class="btn-xs-kms" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399;" onclick="triggerNemotronAnalysis(true)">
+                    ↻ Refresh AI Advisory
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: Interactive 1-Base Tamper Simulator -->
+      <section id="tab-tamper" class="panel-section">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <span>Single-Nucleotide Tamper Interlock Simulator</span>
+            <span style="font-size: 0.72rem; color: var(--amber-accent); font-family: var(--font-mono);">Hardware-Grade Bit-Flip Guard</span>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.6;">
+            Demonstrates GeneSign's bit-flip sensitivity. Click <strong>ANY individual nucleotide</strong> in the watermarked sequence matrix below (or trigger "Auto Mutate 1 Wobble Base") to inject a single nucleotide substitution. Then verify how the payload immediately desynchronizes, tripping CRC16 verification and transitioning to <code style="color: var(--crimson-accent); font-weight: 700;">TAMPERED_PAYLOAD</code>.
+          </p>
+
+          <!-- Active Sequence Source Indicator Badge -->
+          <div id="tamper-source-badge" style="display: flex; align-items: center; justify-content: space-between; background: rgba(6, 10, 20, 0.85); border: 1px solid rgba(56, 189, 248, 0.35); padding: 0.85rem 1.25rem; border-radius: 10px; margin-bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.82rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <span id="tamper-status-dot" style="width: 9px; height: 9px; border-radius: 50%; background: #10b981; box-shadow: 0 0 10px #10b981; display: inline-block;"></span>
+              <span style="color: var(--text-muted);">Active Sequence Source:</span>
+              <span id="tamper-source-label" style="color: var(--cyan-glow); font-weight: 700;">Freshly Watermarked CDS (Loading...)</span>
+            </div>
+            <div id="tamper-source-meta" style="color: #34d399; font-size: 0.76rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>Origin: Verified Licensed Synthesis</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.85rem; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap;">
+            <button id="tamper-auto-flip-btn" class="btn-glass-subtle" style="border-color: rgba(245, 158, 11, 0.5); color: var(--amber-accent);">
+              ⚡ Auto Mutate 1 Wobble Base
+            </button>
+            <button id="tamper-reset-btn" class="btn-glass-subtle" style="border-color: rgba(56, 189, 248, 0.3); color: var(--text-secondary);">
+              ↺ Restore Pristine Watermark
+            </button>
+            <button id="tamper-scan-btn" class="btn-cinema" style="width: auto; padding: 0.65rem 1.4rem;">
+              🔍 Send to Firewall Scanner
+            </button>
+            <div id="tamper-log-msg" style="font-size: 0.82rem; font-family: var(--font-mono); color: var(--text-secondary);">
+              Click any base below to mutate.
+            </div>
+          </div>
+
+          <div class="interactive-dna-stream" id="tamper-sequence-display">
+            (Loading freshly watermarked CDS...)
+          </div>
+
+          <div id="tamper-result-block" style="display: none; margin-top: 1.25rem;"></div>
+        </div>
+      </section>
+
+      <!-- Panel 4: Enterprise Audit Ledger -->
+      <section id="tab-ledger" class="panel-section">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <span>Cryptographic Provenance Audit Trail</span>
+            <button class="btn-glass-subtle" onclick="loadAuditLedger()">↻ Refresh Ledger Stream</button>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Immutable append-only SQLite WAL transaction log recording all watermarking sessions, FASTA sequence screenings, and firewall intercept alerts.
+          </p>
+
+          <div style="overflow-x: auto;">
+            <table class="audit-stream-table">
+              <thead>
+                <tr>
+                  <th>Time (UTC)</th>
+                  <th>Event ID</th>
+                  <th>Type</th>
+                  <th>Classification</th>
+                  <th>Sequence SHA-256</th>
+                  <th>Lab ID</th>
+                  <th>Order ID</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-tbody">
+                <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading audit trail...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+ 
+      <!-- Panel 5: Enterprise Batch & KMS Trust Registry -->
+      <section id="tab-enterprise" class="panel-section">
+        <div class="enterprise-grid">
+          <!-- Batch Screening Ingestion Card -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Async Batch FASTA / FASTQ Screening</span>
+              <span style="font-size: 0.72rem; color: #34d399; font-family: var(--font-mono); background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px;">Level 2 Pipeline</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Stream multi-record `.fasta` or `.fastq` synthesis orders through our non-blocking async firewall worker. Evaluates canonical k-mers, select pathogen profiles, and Ed25519 provenance in parallel.
+            </p>
+
+            <div class="field-group">
+              <label class="field-label">Preloaded Multi-Record Sample Batches</label>
+              <div class="preset-chips">
+                <button class="preset-chip batch-preset-btn" data-sample="batch_fasta">FASTA Order Batch (10 records)</button>
+                <button class="preset-chip batch-preset-btn" data-sample="batch_fastq">FASTQ Sequence Stream (3 records)</button>
+              </div>
+            </div>
+
+            <!-- Drag & Drop Zone -->
+            <div id="batch-dropzone" class="drag-drop-zone">
+              <svg width="32" height="32" fill="none" stroke="var(--coral-accent)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <div>
+                <div style="font-weight: 700; color: var(--ivory); font-size: 0.9rem;">Drag & drop FASTA / FASTQ file here</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.2rem;">Or click to browse from workstation (.fasta, .fa, .fastq, .fq)</div>
+              </div>
+              <input type="file" id="batch-file-input" style="display: none;" accept=".fasta,.fa,.fastq,.fq,.txt">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Or Direct FASTA / FASTQ Text Stream</label>
+              <textarea id="batch-input-text" class="code-textarea" style="height: 120px;" placeholder=">ORDER_001_BENIGN_GFP&#10;ATGGCCCTGTGG...&#10;>ORDER_002_EBOLA_ROGUE&#10;ATGGATCCTACCCAA..."></textarea>
+            </div>
+
+            <button id="batch-submit-btn" class="btn-cinema">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Dispatch Batch Screening Job</span>
+            </button>
+
+            <!-- Live Batch Progress Box -->
+            <div id="batch-progress-box" style="display: none; margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid var(--border-glass);">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.8rem;">
+                <span id="batch-status-text" style="color: var(--cyan-glow);">QUEUED IN BACKGROUND WORKER...</span>
+                <span id="batch-progress-percent" style="font-weight: 700; color: var(--ivory);">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="batch-progress-fill" class="progress-fill"></div>
+              </div>
+              <div id="batch-summary-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.72rem;"></div>
+            </div>
+          </div>
+
+          <!-- Multi-Tenant KMS Registry Card -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Multi-Tenant KMS & Trust Registry</span>
+              <button class="btn-glass-subtle" onclick="loadKmsProviders()">↻ Refresh KMS</button>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Cryptographic trust authority maintaining active Ed25519 root keys, key versioning, and Key Revocation Lists (CRLs) across commercial synthesis foundries.
+            </p>
+
+            <div id="kms-providers-container" class="provider-card-grid">
+              <!-- Loaded dynamically via loadKmsProviders() -->
+              <div style="color: var(--text-muted); font-size: 0.8rem; font-family: var(--font-mono);">Loading KMS provider directory...</div>
+            </div>
+
+            <!-- Active Key Revocation List (CRL) -->
+            <div style="margin-top: 1.5rem;">
+              <div class="glass-card-title" style="font-size: 0.85rem; margin-bottom: 0.5rem;">
+                <span>Active Key Revocation List (CRL)</span>
+                <span id="crl-count-badge" style="font-size: 0.7rem; color: #f87171; font-family: var(--font-mono);">0 Entries</span>
+              </div>
+              <div style="max-height: 160px; overflow-y: auto;">
+                <table class="audit-stream-table" style="font-size: 0.75rem;">
+                  <thead>
+                    <tr>
+                      <th>Provider</th>
+                      <th>Version</th>
+                      <th>Fingerprint</th>
+                      <th>Revocation Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody id="crl-tbody">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 0.75rem;">CRL Empty (All Keys Compliant)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full-Width Batch Manifest Result Table -->
+        <div class="glass-card" id="batch-manifest-panel" style="display: none; margin-top: 1.5rem;">
+          <div class="glass-card-title">
+            <span>Batch Screening Inspection Manifest</span>
+            <span id="batch-job-id-badge" style="font-size: 0.72rem; color: var(--cyan-glow); font-family: var(--font-mono);"></span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="audit-stream-table">
+              <thead>
+                <tr>
+                  <th>Record ID</th>
+                  <th>Format</th>
+                  <th>Length</th>
+                  <th>GC %</th>
+                  <th>Classification</th>
+                  <th>Pathogen / Toxin Hit</th>
+                  <th>Provenance Lab</th>
+                  <th>Summary Details</th>
+                </tr>
+              </thead>
+              <tbody id="batch-manifest-tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 6: Hardware Safety Interlock & Fragment Assembler TOC (Level 3) -->
+      <section id="tab-hardware" class="panel-section">
+        <div class="enterprise-grid">
+
+          <!-- Card 1: Physical Synthesizer Hardware Safety Gate -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Synthesizer Hardware Interlock</span>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <span id="hw-state-badge" class="crl-badge active">LOCKED STANDBY</span>
+                <button class="btn-glass-subtle" onclick="refreshHardwareTelemetry()">↻ Telemetry</button>
+              </div>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Industrial hardware controller enforcing real-time cryptographic authorization gates. All monomer dispensing valves are mechanically sealed until a valid <strong style="color: #34d399;">VERIFIED_LICENSED</strong> provenance token is confirmed. Any unauthorized payload triggers immediate <strong style="color: #ef4444;">INTERLOCK_HALT</strong>.
+            </p>
+
+            <!-- Telemetry Quad -->
+            <div class="metrics-quad" style="margin-bottom: 1rem;">
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Chamber Pressure</div>
+                <div class="metric-quad-val" id="telem-pressure">1.01 bar</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Manifold Temp</div>
+                <div class="metric-quad-val" id="telem-temp">24.2 °C</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Coupling Efficiency</div>
+                <div class="metric-quad-val" id="telem-coupling" style="color: #34d399;">99.4%</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Interlock Latch</div>
+                <div class="metric-quad-val" id="telem-latch" style="color: #38bdf8;">SECURE</div>
+              </div>
+            </div>
+
+            <!-- Physical Valve Matrix Schematic -->
+            <label class="field-label" style="margin-top: 0.5rem;">Pneumatic Dispensing Valve Matrix</label>
+            <div class="valve-grid" id="valve-matrix-container">
+              <div class="valve-card" id="valve-monomer_a"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Monomer A</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-monomer_c"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Monomer C</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-monomer_g"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Monomer G</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-monomer_t"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Monomer T</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-activator"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Activator</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-oxidizer"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Oxidizer</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-deblock"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Deblock</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+              <div class="valve-card" id="valve-capping"><div class="valve-led"></div><span style="font-size: 0.72rem; font-family: var(--font-mono); color: var(--ivory);">Capping</span><span class="valve-status" style="font-size: 0.65rem; color: var(--text-muted);">CLOSED</span></div>
+            </div>
+
+            <!-- Emergency Actions & Test Dispatch -->
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+              <button id="hw-estop-btn" class="btn-estop" onclick="triggerHardwareEstop()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                EMERGENCY STOP (E-STOP)
+              </button>
+              <button id="hw-reset-btn" class="btn-estop-reset" onclick="resetHardwareInterlock()">
+                ↻ Reset Interlock Latch
+              </button>
+            </div>
+
+            <!-- Test Gate Triggers -->
+            <div style="margin-top: 1.25rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--border-glass);">
+              <div style="font-weight: 700; font-size: 0.82rem; color: var(--ivory); margin-bottom: 0.5rem;">Safety Gate Simulation Runs</div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn-xs-kms" onclick="dispatchAuthorizedTest()">▶ Dispatch Licensed Order (GFP)</button>
+                <button class="btn-xs-kms danger" onclick="dispatchRogueTest()">⚠ Dispatch Rogue Construct (Trip Halt)</button>
+              </div>
+              <div id="hw-dispatch-console" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; line-height: 1.5;">Standby: Ready for synthesis dispatch.</div>
+            </div>
+          </div>
+
+          <!-- Card 2: Fragment Assembly De-anonymization & Overhang Reconstruction -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Fragment Assembly De-anonymization</span>
+              <span style="font-size: 0.72rem; color: var(--cyan-glow); font-family: var(--font-mono);">Overhang Reconstruction</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Detects distributed synthesis evasion attacks where bad actors split hazardous sequences into fragmented sub-lethal oligos across multiple customer accounts or provider foundries.
+            </p>
+
+            <div class="field-group">
+              <label class="field-label">Pre-configured Evasion Scenarios</label>
+              <div class="preset-chips">
+                <button class="preset-chip" onclick="loadSplitScenario('anthrax')">Distributed Anthrax LF (3 Split Orders)</button>
+                <button class="preset-chip" onclick="loadSplitScenario('botulinum')">Distributed BoNT/A (3 Split Orders)</button>
+                <button class="preset-chip" onclick="loadSplitScenario('gfp')">Benign Fragmented GFP (2 Orders)</button>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Multi-Order Fragment Queue (JSON)</label>
+              <textarea id="split-orders-json" class="code-textarea" style="height: 140px;"></textarea>
+            </div>
+
+            <button id="screen-split-orders-btn" class="btn-cinema" onclick="screenSplitOrders()">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Reconstruct Overhangs & Screen Contigs</span>
+            </button>
+
+            <!-- Assembled Contigs Container -->
+            <div id="contigs-result-container" style="margin-top: 1rem;">
+              <!-- Populated dynamically via screenSplitOrders() -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Merkle Tree & Cryptographic Audit Proofs Bar -->
+        <div class="glass-card" style="margin-top: 1.5rem;">
+          <div class="glass-card-title">
+            <span>Immutable Merkle Tree Ledger & RFC-3161 Proofs</span>
+            <span style="font-size: 0.72rem; color: #34d399; font-family: var(--font-mono); background: rgba(16, 185, 129, 0.15); padding: 0.2rem 0.5rem; border-radius: 4px;">WHO / CDC / US-HHS Verified</span>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+            Append-only cryptographic hash chain and binary Merkle Tree over all biosecurity audit events. Produces verifiable zero-knowledge mathematical inclusion proofs and exportable RFC-3161 timestamped compliance bundles.
+          </p>
+
+          <div class="merkle-root-box">
+            <div>
+              <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase;">Current Merkle Root:</span>
+              <div id="merkle-root-display" style="color: #38bdf8; font-weight: 700; margin-top: 0.2rem;">Computing cryptographic root...</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn-xs-kms" onclick="exportMerkleBundle()">Export RFC-3161 Bundle (JSON)</button>
+              <button class="btn-xs-kms" onclick="verifyActiveBundle()">Verify Cryptographic Chain</button>
+            </div>
+          </div>
+
+          <div id="merkle-verif-result" style="display: none; margin-top: 1rem; padding: 0.85rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem;"></div>
+        </div>
+      </section>
+
+    </main>
+    </div> <!-- /#console-view-container -->
+
+    <!-- Mode B: Public Enterprise SaaS Portal & Monetization Suite -->
+    <section id="saas-portal-view" class="saas-portal-section">
+
+      <!-- Hero Section -->
+      <div class="saas-hero">
+        <div class="saas-hero-badge">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Enterprise Biosecurity Operating System
+        </div>
+        <h1 class="saas-hero-title">
+          Commercial DNA Synthesis <span>Security & Provenance</span> Platform
+        </h1>
+        <p class="saas-hero-sub">
+          Turn biosecurity compliance into an automated, verifiable revenue driver. Guarantee full compliance with <strong>US HHS 2026 mandates</strong> and <strong>ISO/TC 276</strong> with zero-drift codon steganography, Tier-1 select agent screening, physical synthesizer hardware interlocks, and white-labeled compliance certificates.
+        </p>
+      </div>
+
+      <!-- Commercial Pricing Matrix -->
+      <div class="pricing-grid">
+        <!-- Tier 1: Startup Lab -->
+        <div class="pricing-card" id="card-plan-startup">
+          <div class="pricing-title">Startup Lab</div>
+          <div class="pricing-desc">For synthetic biology research labs and specialized gene-editing startups.</div>
+          <div class="pricing-price">
+            $499<span class="period">/ month</span>
+          </div>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 100,000 bp / month included ($0.0005/extra bp)</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 10,000 API requests / day</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Streaming FASTA / FASTQ Threat Screening</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> US HHS Standard Compliance Certificates</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 48-Hour SLA Email Support</li>
+          </ul>
+          <button class="btn-pricing secondary" onclick="subscribeTierFromUI('STARTUP_LAB')">Select Startup Lab</button>
+        </div>
+
+        <!-- Tier 2: Synthesis Foundry (Featured) -->
+        <div class="pricing-card featured" id="card-plan-foundry">
+          <div class="pricing-badge">MOST POPULAR // FOUNDRY GRADE</div>
+          <div class="pricing-title">Synthesis Foundry</div>
+          <div class="pricing-desc">For high-throughput commercial DNA synthesis providers (Twist, IDT, Ginkgo).</div>
+          <div class="pricing-price">
+            $2,499<span class="period">/ month</span>
+          </div>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 2,500,000 bp / month included ($0.0003/extra bp)</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Unlimited API Keys & Multi-Tenant Registry</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong>OPC-UA Hardware Synthesizer Safety Interlock</strong></li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong>White-Label Vector Signed PDF Certificates</strong></li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 99.9% Uptime Enterprise SLA & Webhook Dispatch</li>
+          </ul>
+          <button class="btn-pricing primary" onclick="subscribeTierFromUI('SYNTHESIS_FOUNDRY')">Activate Foundry Plan</button>
+        </div>
+
+        <!-- Tier 3: Global Network -->
+        <div class="pricing-card" id="card-plan-network">
+          <div class="pricing-title">Global Biosecurity Network</div>
+          <div class="pricing-desc">For sovereign biological defense agencies, WHO/CDC hubs, and multi-site foundries.</div>
+          <div class="pricing-price">
+            $9,999<span class="period">/ month</span>
+          </div>
+          <ul class="pricing-features">
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 20,000,000 bp / month included ($0.0001/extra bp)</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> <strong>Cross-Foundry Fragment Graph De-Anonymizer</strong></li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Dedicated Hardware HSM Signer Integration</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom ISO/TC 276 & Biodefense Consortia Audits</li>
+            <li><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> 24/7 Dedicated Biosecurity Officer On-Call</li>
+          </ul>
+          <button class="btn-pricing secondary" onclick="subscribeTierFromUI('GLOBAL_ENTERPRISE')">Enterprise Custom Agreement</button>
+        </div>
+      </div>
+
+      <!-- Commercial SaaS Interactive Workspaces -->
+      <div class="saas-widget-grid">
+
+        <!-- Column 1: API Keys & Billing Telemetry -->
+        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+
+          <!-- Widget 1: API Key Provisioning -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>B2B API Key Provisioning</span>
+              <span style="font-size: 0.72rem; color: var(--cyan-glow); font-family: var(--font-mono);">SHA-256 HASHED SECRETS</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Issue cryptographically isolated programmatic access keys for high-throughput automated synthesis pipelines.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 130px; gap: 0.75rem; align-items: end;">
+              <div class="field-group" style="margin-bottom: 0;">
+                <label class="field-label">Key Label / Integration Name</label>
+                <input type="text" id="new-key-label" class="field-input" placeholder="e.g. Twist SFO Production Pipeline #2" value="Synthesis Foundry Core Key">
+              </div>
+              <div class="field-group" style="margin-bottom: 0;">
+                <label class="field-label">Tier Quota</label>
+                <select id="new-key-tier" class="field-input" style="height: 42px;">
+                  <option value="FREE">Free (50/day)</option>
+                  <option value="STARTUP">Startup (10k/day)</option>
+                  <option value="ENTERPRISE" selected>Enterprise (Unlimited)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn-cinema" style="margin-top: 1rem;" onclick="provisionApiKeyFromUI()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 2l-2 2m-6 6l7-7m-7 7l-2 2m-2-2l-7 7m7-7l2-2m-2 2l-4 4m-3 3l-2-2"></path><circle cx="7.5" cy="15.5" r="5.5"></circle></svg>
+              <span>Generate Production API Key</span>
+            </button>
+
+            <!-- Fresh Key Result Box -->
+            <div id="new-key-result-box" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.4);">
+              <div style="font-size: 0.75rem; color: #34d399; font-weight: 700; text-transform: uppercase;">Generated API Key (Copy Now - Shown Once):</div>
+              <div class="key-display-box" id="new-key-raw-text">gs_live_...</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+                <span style="font-size: 0.7rem; color: #94a3b8;">SHA-256 Digest stored securely in database.</span>
+                <button class="btn-xs-kms" onclick="copyProvisionedKey()">Copy Token</button>
+              </div>
+            </div>
+
+            <!-- Existing Keys Table -->
+            <label class="field-label" style="margin-top: 1.5rem;">Active Tenant API Keys</label>
+            <div style="overflow-x: auto;">
+              <table class="ledger-table" style="font-size: 0.75rem;">
+                <thead>
+                  <tr>
+                    <th>Key ID</th>
+                    <th>Label</th>
+                    <th>Prefix</th>
+                    <th>Tier</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="api-keys-tbody">
+                  <!-- Loaded dynamically via loadTenantApiKeys() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Widget 2: Automated Usage Metering & Billing -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Real-Time Usage Metering</span>
+              <span id="billing-tier-badge" style="font-size: 0.72rem; color: #38bdf8; font-family: var(--font-mono); background: rgba(56, 189, 248, 0.15); padding: 0.2rem 0.6rem; border-radius: 4px;">SYNTHESIS FOUNDRY PLAN</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Accurate base-pair throughput metering calculating current monthly subscription dues ($0.0005 per synthesized base pair).
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Base Pairs Watermarked</div>
+                <div class="metric-quad-val" id="meter-bp" style="color: var(--coral-accent);">0 bp</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Accrued Invoice Total</div>
+                <div class="metric-quad-val" id="meter-cost" style="color: #34d399;">$2,499.00</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Biosecurity Scans</div>
+                <div class="metric-quad-val" id="meter-scans" style="color: #38bdf8;">0 scans</div>
+              </div>
+              <div class="metric-quad-card">
+                <div class="metric-quad-label">Merkle Audit Receipts</div>
+                <div class="metric-quad-val" id="meter-proofs" style="color: #fbbf24;">0 proofs</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted);">
+                <span>Monthly Quota Utilization</span>
+                <span id="meter-utilization-pct">12.4% of 2.5M bp</span>
+              </div>
+              <div class="usage-meter-bar">
+                <div class="usage-meter-fill" id="meter-bar-fill" style="width: 12.4%;"></div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+              <button class="btn-xs-kms" onclick="refreshBillingUsage()">↻ Refresh Telemetry</button>
+              <button class="btn-xs-kms" onclick="viewInvoicesModal()">View Historical Invoices</button>
+            </div>
+            <div id="invoices-list-container" style="display: none; margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.4); border-radius: 8px;"></div>
+          </div>
+        </div>
+
+        <!-- Column 2: White-Label Studio & Developer SDKs -->
+        <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+
+          <!-- Widget 3: White-Label Certificate Studio -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>White-Label Certificate Studio</span>
+              <span style="font-size: 0.72rem; color: #34d399; font-family: var(--font-mono);">US HHS & ISO/TC 276</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Brand all customer-facing compliance receipts with your organization logo, certified lab facility ID, and custom accent palette.
+            </p>
+
+            <div class="field-group">
+              <label class="field-label">Foundry / Organization Name</label>
+              <input type="text" id="brand-org-name" class="field-input" value="Twist Bioscience Corporation">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="field-group">
+                <label class="field-label">Lab Facility Registry ID</label>
+                <input type="text" id="brand-lab-id" class="field-input" value="TWS-SFO-01">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Compliance Contact Email</label>
+                <input type="email" id="brand-email" class="field-input" value="compliance@twistbioscience.com">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 120px; gap: 0.75rem;">
+              <div class="field-group">
+                <label class="field-label">Vector Logo URL</label>
+                <input type="text" id="brand-logo" class="field-input" value="https://twistbioscience.com/assets/logo.svg">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Accent Color</label>
+                <input type="color" id="brand-color" class="field-input" style="height: 42px; padding: 0.2rem; cursor: pointer;" value="#ff5a36">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+              <button class="btn-cinema" style="flex: 1;" onclick="saveTenantBrandingFromUI()">
+                <span>Save White-Label Branding</span>
+              </button>
+              <button class="btn-xs-kms" style="padding: 0.75rem 1rem;" onclick="downloadSamplePdfCert()">
+                ↓ Export Vector Signed PDF
+              </button>
+            </div>
+
+            <div id="branding-status-msg" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.75rem; color: #34d399; display: none;"></div>
+          </div>
+
+          <!-- Widget 4: Self-Service Developer Documentation & SDKs -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <span>Developer SDKs & Integration</span>
+              <span style="font-size: 0.72rem; color: var(--cyan-glow); font-family: var(--font-mono);">REST / PYTHON / CURL</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+              Seamlessly embed GeneSign into your automated synthesis LIMS with 4 lines of code.
+            </p>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <button class="btn-xs-kms active" id="btn-sdk-curl" onclick="switchSdkTab('curl')">cURL</button>
+              <button class="btn-xs-kms" id="btn-sdk-python" onclick="switchSdkTab('python')">Python SDK</button>
+              <button class="btn-xs-kms" id="btn-sdk-node" onclick="switchSdkTab('node')">Node.js</button>
+            </div>
+
+            <div id="sdk-snippet-curl" class="code-snippet-pre">curl -X POST "http://127.0.0.1:8095/api/v1/watermark" \
+  -H "X-API-Key: gs_live_twist_enterprise_key_99" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dna_sequence": "ATGGAGGTTAACATTCCG...",
+    "lab_id": "TWIST",
+    "order_id": "ORD-2026-991"
+  }'</div>
+
+            <div id="sdk-snippet-python" class="code-snippet-pre" style="display: none;">import requests
+
+url = "http://127.0.0.1:8095/api/v1/watermark"
+headers = {"X-API-Key": "gs_live_twist_enterprise_key_99"}
+payload = {
+    "dna_sequence": "ATGGAGGTTAACATTCCG...",
+    "lab_id": "TWIST",
+    "order_id": "ORD-2026-991"
+}
+
+response = requests.post(url, json=payload, headers=headers)
+cert = response.json()["certificate_id"]
+print(f"Construct watermarked with zero amino acid drift! Cert: {cert}")</div>
+
+            <div id="sdk-snippet-node" class="code-snippet-pre" style="display: none;">const fetch = require('node-fetch');
+
+async function watermarkDNA() {
+  const res = await fetch('http://127.0.0.1:8095/api/v1/watermark', {
+    method: 'POST',
+    headers: {
+      'X-API-Key': 'gs_live_twist_enterprise_key_99',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      dna_sequence: 'ATGGAGGTTAACATTCCG...',
+      lab_id: 'TWIST',
+      order_id: 'ORD-2026-991'
+    })
+  });
+  const data = await res.json();
+  console.log('Watermarked sequence:', data.watermarked_sequence);
+}</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Scripts: Local Three.js (No CDN dependency), 3D Canvas Controller, and Dashboard -->
+  <script src="/static/js/three.min.js"></script>
+  <script src="/static/js/dna_canvas.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script>
+    // Initialize Three.js Double Helix on window load
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof window.initDNAViewer === "function") {
+        window.initDNAViewer();
+      }
+    });
+  </script>
+</body>
+</html>
