@@ -56,7 +56,23 @@ flowchart TD
 
 ---
 
-## 2. Core Capabilities
+## 2. Visual Interface & Operations Showcase
+
+GeneSign features a high-density, real-time operations console built with WebGL Three.js interactive 3D visualizations, biological signal matrices, and an integrated NVIDIA AI advisory panel.
+
+| **Operations Command HUD & 3D Molecule Visualizer** | **Real-Time Pathogen k-mer Radar & Threat Screening** |
+| :---: | :---: |
+| ![Operations Command HUD](docs/screenshots/hud_overview.png) | ![Biosecurity Threat Radar](docs/screenshots/scanner_radar.png) |
+| *Real-time synthesis telemetry, 3D double helix canvas, live stats ticker, and synchronous encoder controls.* | *Deep k-mer screening against Select Agents (Ebola, Smallpox, Ricin) with immediate provenance extraction.* |
+
+| **NVIDIA Nemotron Autonomous Biosecurity Copilot** | **1-Base Single-Nucleotide Tamper Simulator** |
+| :---: | :---: |
+| ![NVIDIA Nemotron AI Copilot](docs/screenshots/nemotron_copilot.png) | ![1-Base Tamper Simulator](docs/screenshots/tamper_interlock.png) |
+| *Autonomous regulatory directives and executive risk scoring grounded in US HHS 2026 and ISO/TC 276 mandates.* | *Interactive nucleotide matrix showing bit-flip sensitivity, CRC16 desynchronization, and emergency trip.* |
+
+---
+
+## 3. Core Capabilities
 
 ### 🛡️ Synonymous Degenerate Codon Steganography (`engine/watermark.py`)
 - **Zero-Drift Carrier Pairs**: Encodes binary provenance data (`Lab ID`, `Order ID`, `Ed25519 Signature`, `CRC16 Checksum`) strictly into redundant third-base wobble positions.
@@ -86,7 +102,7 @@ flowchart TD
 
 ---
 
-## 3. Quickstart & Local Setup
+## 4. Quickstart & Local Setup
 
 ### Prerequisites
 - Python 3.10, 3.11, 3.12, or 3.14
@@ -142,7 +158,7 @@ Open your browser to:
 
 ---
 
-## 4. API Reference
+## 5. API Reference
 
 ### 🧠 AI Threat Rationale & Advisory
 
@@ -216,7 +232,7 @@ Returns active AI model configuration, endpoint, and credential readiness:
 
 ---
 
-## 5. Regulatory & Standards Alignment
+## 6. Regulatory & Standards Alignment
 
 GeneSign is built to automate compliance with international biosecurity mandates:
 
@@ -233,7 +249,7 @@ GeneSign is built to automate compliance with international biosecurity mandates
 
 ---
 
-## 6. Enterprise Deployment Blueprint
+## 7. Enterprise Deployment Blueprint
 
 GeneSign provides a production-hardened container stack inside [`deploy/`](deploy/):
 
@@ -248,7 +264,7 @@ docker compose -f deploy/docker-compose.prod.yml up -d
 
 ---
 
-## 7. Verification & Automated Test Suite
+## 8. Verification & Automated Test Suite
 
 Run the full test suite (40 automated tests spanning Level 1, Level 2, Level 3, Commercial SaaS, and NVIDIA Nemotron):
 
@@ -272,7 +288,7 @@ tests/test_nemotron.py   (5 tests) ........................... PASSED
 
 ---
 
-## 8. License & Commercial Inquiries
+## 9. License & Commercial Inquiries
 
 Licensed under the **Apache License, Version 2.0**.
 
